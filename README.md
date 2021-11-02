@@ -5,7 +5,7 @@ Here you will find a program that implements the XMODEM and
 YMODEM file transfer protocols for OpenVMS (VAX, Alpha,
 Integrity [and x86_64 soon]).
 
-I originally wrote this in VAX Macro-32 in around May 1980, and
+I originally wrote this in VAX Macro-32 in around May 1982, and
 this version is the result of converting it to FORTRAN-77 so
 that it could be ported to run on the then new Alpha architecture
 in around June 1989.  Sadly, I've lost the original Macro-32
