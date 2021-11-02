@@ -1,0 +1,199 @@
+1 Vaxmodem
+ VAXMODEM is a file transfer program.  It allows the transfer of files
+ over terminal lines between the VAX and a microcomputer running a
+ "WARD CHRISTENSEN" protocol file transfer program (XMODEM or YMODEM
+ protocols).
+ 
+ The current implementation of VAXMODEM can send and receive two types
+ of RMS files - ASCII Text to and from RMS Variable length CR-delimited
+ files, and BINARY (8 bit bytes) to RMS Fixed length 512 byte record files.
+ 
+ Files can be transferred one at a time, or in "batches" if your
+ micro's file transfer program uses YMODEM protocol (YAM, TELIX)
+2 SEND
+ To transfer a file FROM the VAX, use the SEND command and specify the
+ filename.  Optional switches are used to determine the protocol used.
+ 
+ The default is to use XMODEM protocol, with the transfer mode
+ determined by the file's RMS attributes.  Variable Length CR-delimited
+ files are sent as ASCII text files (with CR-LF line terminators) and
+ a single CTRL-Z at the end of file.  Fixed length 512 byte record files
+ are sent as four XMODEM packets.  You can override the automatic
+ transfer mode detection by specifying either the /ASCII or /BINARY
+ switch.
+ 
+ If you want to use YMODEM protocol to send single or multiple files
+ (using a wild filename), you need to specify the /BATCH switch.
+3 /ASCII
+ This switch forces all files to be sent with line terminator
+ characters appended to each record.  Normally these are a <RETURN>
+ and <LINEFEED> character - but you can suppress either (or both) using
+ the /NOCR and /NOLF switches.  A <CTRL-Z> character is appended to
+ the end of file.
+3 /ASYNC86
+ The NEC Async-86 program requires an additional <NAK> character to
+ be output following the check digit.  This switch modifies the
+ protocol to allow transfers using Async-86.
+3 /BATCH
+ This modifies the transfer protocol to YMODEM whereby a special
+ pathname packet is sent containing the filename.  Multiple files
+ can be transferred at a time (in batches) using this protocol.
+3 /BINARY
+ This switch forces all files to be sent in binary mode (with no
+ record terminator characters added).  Any incomplete packet at
+ the end of the file (not a multiple of 128 bytes) has <NUL> filler
+ characters appended.
+3 /NOCR
+ When used in conjunction with sending a normal text file, this
+ switch inhibits a <RETURN> character at the end of each line.
+ If you do not also specify /NOLF this option gives Unix-style
+ line terminators (linefeeds only). 
+3 /NOLF
+ When used in conjunction with sending a variable length CR-delimited
+ file (normal text file) causes each record to have only a <RETURN>
+ character line terminator (as used on the Apple Macintosh).
+ 
+ The default is /LF which gives both a <RETURN> and a <LINEFEED>
+ line terminator.
+3 Examples
+ To send a text file PROGRAM.FOR using XMODEM protocol
+ 
+ 	VAXMODEM> SEND PROGRAM.FOR
+ 
+ To send all fortran source files (*.FOR) using YMODEM protocol
+ 
+ 	VAXMODEM> SEND/BATCH *.FOR
+2 RECEIVE
+ To transfer a file TO the VAX, use the RECEIVE command and specify the
+ name of the file to be created on the VAX.  Optional switches are used
+ to determine the protocol used.
+ 
+ The default is to use XMODEM protocol and create a variable length
+ CR-delimited RMS (normal text) files (see /ASCII switch).   For
+ transferring binary data you need to specify the /BINARY switch
+ so that a fixed length 512 byte record RMS file is created.
+ 
+ If you want to use YMODEM protocol to receive single or multiple files
+ (using the names provided by the sending program), you need to specify
+ the /BATCH switch.  VAXMODEM is capable of receiving 1024 byte packets.
+ 
+ To use a cyclic redundancy check instead of the usual checksum use /CRC.
+3 /ASCII
+ Using /ASCII (or /NOBINARY) selects the default of creating normal
+ variable length CR-delimited RMS text files.  The line terminator
+ characters <RETURN> and <LINEFEED> are removed and all characters up
+ to a CTRL-Z are written to the file.  If you use multi-national 8-bit
+ characters then be sure to use the /EIGHTBIT switch.
+3 /BATCH
+ This modifies the transfer protocol to YMODEM whereby a special
+ pathname packet is received containing the filename.  A check is made
+ to ensure any illegal VMS filename characters are replaced with an
+ underscore '_' character.  Multiple files may be transferred using
+ this option - but all files are created using the same RMS file
+ attributes (/ASCII is the default, or specify /BINARY as required).
+3 /BINARY
+ Using /BINARY (or /NOASCII) selects the creating of fixed length 512
+ byte record RMS files.  Four standard 128 byte data sectors are written
+ as each record (with the last record padded with zero data bytes). To
+ write 128 byte sectors as-is into fixed length 128 byte record RMS
+ files include /SECTOR on the command line.
+3 /CRC
+ This modifies the transfer protocol to use cyclic redundancy check
+ bytes instead of the usual additive checksum - hence better error
+ detection capabilities.  Since the protocol is receiver driven, you
+ need to specify this to use CRC checksumming.
+3 /EIGHTBIT
+ When used in conjunction with the /ASCII receive mode, allows multi-
+ national 8-bit character codes to be received.
+ 
+ The default is /NOEIGHTBIT which causes only 7-bit characters to
+ be written to the VMS text file.
+3 Examples
+ To receive a text file PROGRAM.FOR using XMODEM protocol
+ 
+ 	VAXMODEM> REC PROGRAM.FOR
+ 
+ To receive a batch of files using YMODEM protocol and CRC checksumming
+ 
+ 	VAXMODEM> REC/BATCH/CRC
+3 /SECTOR
+ When used in conjunction with the /BINARY receive mode, causes the
+ resulting file to be written in 128 byte records (equivalent to the
+ logical sector-size on CP/M formatted floppy disks).  Cannot be used
+ with non-binary file transfers (/ASCII is illegal).  Resulting binary
+ files on VMS can be sent (using SEND/BINARY) without extraneous
+ padding of extra logical sectors that would otherwise occur if the
+ (default) 512 byte native binary format was used.
+2 SET TIMEOUT
+ VAXMODEM has a time-out feature which will cause a file transfer
+ to be aborted if no characters are detected.  This time-out can vary
+ depending upon the number of "re-tries" VAXMODEM has counted.  The
+ initial time-out is defaulted to 9 seconds per character between
+ message packets and 3 seconds between individual characters in a
+ message packet - but this can be changed by entering the SET TIMEOUT=n
+ command.
+ 
+ Up to 10 re-tries are attempted by VAXMODEM before it will abort a
+ file transfer.
+ 
+ A consequence of this time-out feature is that you only have around
+ ninety seconds (using the default time-out) to get your micro's file
+ transfer program in its file send or receive mode.
+ 
+ To vary the time-out interval use
+ 
+ 	VAXMODEM> SET TIMEOUT=n
+ 
+ where n is the receive character time-out period in seconds
+3 Example
+ To increase the default timeout from 3 to 5 seconds -
+ 
+ 	VAXMODEM> SET TIMEOUT=5
+ 	%VAXMODEM-I-RCVTMOSET, Receive timeout set to 5 seconds
+2 Running_Vaxmodem
+ VAXMODEM can be RUN from LOCAL_EXE: or you may wish to define a foreign
+ DCL command (in your LOGIN.COM file)
+ 
+ 	$ VAXM*ODEM :== "$LOCAL_EXE:VAXMODEM"	! Define foreign command
+	$ VAXMODEM SEND/BATCH *.FOR		! Command line
+ or
+	$ RUN LOCAL_EXE:VAXMODEM
+	VAXMODEM> RECEIVE/BATCH/BINARY
+2 Communications_setup
+ VAXMODEM transfers files to the user's interactive terminal as 8-bit
+ binary characters with no parity.  Your microcomputer must be capable
+ of sending and receiving in this format otherwise the file transfer
+ will not work.  There is no need for you to enter any special commands
+ to the VAX to set the terminal characteristics since VAXMODEM does
+ this automatically.
+ 
+ For details concerning the Ward Christensen Protocol refer to the
+ CP/M-Users Group Public Domain software library or contact your local
+ Microcomputer Club.  This is not the place for such details.
+2 Aborting_transfer
+ If for any reason you need to abort a file transfer you should type
+ a few <CTRL-X>'s to VAXMODEM (as per the Ward Christensen protocol).
+ In addition, VAXMODEM will recognise <CTRL-Y> and <CTRL-C> (but only
+ when it is awaiting a reply or a message packet from the microcomputer).
+ 
+ VAXMODEM will automatically time-out if a valid message packet is not
+ received and return to the prompt.  The time-out interval can be set
+ with the 'SET TIMEOUT=n' command.
+2 Using_NEC_Async86
+ The NEC ASYNC-86 file transfer program does not strictly use Ward
+ Christensen Protocol in its file receive mode, hence VAXMODEM has a
+ /ASYNC86 switch to adjust the protocol accordingly.
+ 
+ 	VAXMODEM> SEND/ASYNC86 FILE.FOR
+ 
+2 ASCII_Delimiter
+ ASCII text is normally sent from VAXMODEM with each line terminated
+ by a carriage return and line-feed (which is the default).  These
+ characters are appended to each record from the CR_delimited RMS input
+ file.  Should you wish to have ASCII text delimited by a carriage
+ return only (as in the case of the Apple MacIntosh) then you will need
+ to specify the /NOLF switch when sending files from VAXMODEM.
+ 
+ There is no need to specify the /NOLF switch when receiving a file on
+ the VAX using VAXMODEM as it strips off the line terminator characters
+ automatically.

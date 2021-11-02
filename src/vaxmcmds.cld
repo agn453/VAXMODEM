@@ -1,0 +1,49 @@
+Module VAXMODEM_COMMANDS
+Define verb EXIT
+Define verb HELP
+    parameter P1
+	Label = HELP_SPEC
+	Value (TYPE=$REST_OF_LINE)
+Define verb SEND
+    parameter P1
+	Label = FILE_SPEC
+	Value (TYPE=$FILE,REQUIRED)
+	Prompt = "File"
+    qualifier ASCII
+    qualifier ASYNC86
+    qualifier BATCH
+    qualifier BINARY
+    qualifier CR
+	default
+    qualifier EIGHTBIT
+    qualifier LF
+	default
+    disallow ASCII and BINARY
+    disallow neg ASCII and neg BINARY
+    disallow neg EIGHTBIT and BINARY
+Define verb SET
+    parameter P1
+	Label = SET_SPEC
+	Value (TYPE=SET_TYPE,REQUIRED)
+	Prompt "What"
+Define verb RECEIVE
+    parameter P1
+	Label = FILE_SPEC
+	Value (TYPE=$FILE)
+    qualifier ASCII
+    qualifier BATCH
+    qualifier BINARY
+    qualifier CRC
+    qualifier EIGHTBIT
+    qualifier SECTOR
+    disallow ASCII and BINARY
+    disallow ASCII and SECTOR
+    disallow neg ASCII and neg BINARY
+    disallow neg EIGHTBIT and BINARY
+    disallow neg EIGHTBIT and SECTOR
+Define type SET_TYPE
+    keyword TIMEOUT
+	Value (TYPE=$NUMBER,DEFAULT=3)
+    keyword DEBUG
+	Negatable
+	Value (TYPE=$FILE,DEFAULT="VAXMODEM.DBG")

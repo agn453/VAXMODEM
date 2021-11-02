@@ -1,0 +1,22 @@
+A new version of the VAXMODEM file transfer program is available in NULIB:
+
+VAXMODEM can transfer files over terminal lines between the VAX and a
+microcomputer running a "WARD CHRISTENSEN" (also known as XMODEM) protocol
+file transfer program (such as MODEM7 on a CP/M micro or TELIX on a MS-DOS
+micro).  VAXMODEM can also transfer a batch of files using the YMODEM
+protocol (YAM on CP/M, or TELIX on MS-DOS).  CRC checksumming, and 1024
+byte data packets are supported.
+
+The current implementation of VAXMODEM can receive two types of RMS files
+on the VAX.  Normal ASCII text (source program) files are written to
+variable length CR-delimited files, and BINARY (8 bit bytes) to fixed length
+512 byte record files (or 128 byte records when the /SECTOR switch is used).
+
+VAXMODEM can be RUN from NULIB: or you may wish to define a foreign DCL
+command (in your LOGIN.COM file)
+
+	$ VAXM*ODEM :== "$NULIB:VAXMODEM"
+
+Type HELP to VAXMODEM's prompt, or use HELP @N VAXMODEM for more details.
+
+Please report any problems to Tony Nicholson using mail to CC::CCAGN

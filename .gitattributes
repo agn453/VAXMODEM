@@ -1,0 +1,12 @@
+LICENSE text
+README.md text
+*.com text linguist-language=DIGITAL Command Language
+*.cld text
+*.msg text
+*.exe-vax binary
+*.exe-axp binary
+*.for text linguist-language=Fortran
+*.inc text linguist-language=Fortran
+*.hlp text
+*.news text
+*.zip binary
